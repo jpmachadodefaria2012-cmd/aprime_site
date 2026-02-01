@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>APRIME AI</title>
+    <style>
+        body {
+            background: #0f0f0f;
+            color: white;
+            font-family: Arial;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-box {
+            background: #1c1c1c;
+            width: 420px;
+            height: 550px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .msg {
+            margin: 8px 0;
+        }
+
+        .user { color: #00ff88; }
+        .bot { color: #00bfff; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-box">
+    <div class="messages" id="messages">
+        <div class="msg bot">APRIME 🤖: Olá! Estou aqui para te ajudar 💙</div>
+    </div>
+    <input type="text" id="input" placeholder="Digite sua mensagem..." onkeydown="enviar(event)">
+</div>
+
+<script>
+    async function enviar(e) {
+        if (e.key === "Enter") {
+            let input = document.getElementById("input");
+            let mensagem = input.value.trim();
+            if (!mensagem) return;
+
+            mostrar("Você", mensagem, "user");
+            input.value = "";
+
+            // Chamada para o Flask
+            let resposta = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ mensagem })
+            });
+
+            let data = await resposta.json();
+            mostrar("APRIME", data.resposta, "bot");
+        }
+    }
+
+    function mostrar(nome, texto, classe) {
+        let messages = document.getElementById("messages");
+        let div = document.createElement("div");
+        div.className = "msg " + classe;
+
+        // Destaque para sugestões
+        if(texto.startsWith("Aqui vai uma sugestão:")) {
+            div.innerHTML = `<b>${nome}:</b> <i>${texto}</i>`;
+        } else {
+            div.innerHTML = `<b>${nome}:</b> ${texto}`;
+        }
+
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+    }
+</script>
+
+</body>
+</html>

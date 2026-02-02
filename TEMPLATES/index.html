@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APRIME</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="top-bar">
+      <div class="logo">
+        <div class="tri a"></div>
+        <div class="tri b"></div>
+      </div>
+      <span class="title">APRIME</span>
+    </header>
+
+    <main class="chat-area" id="messages">
+      <div class="bubble bot">Olá! Estou aqui para te ajudar 💙</div>
+    </main>
+
+    <footer class="input-area">
+      <input type="text" id="input" placeholder="Digite sua mensagem..." onkeydown="enviar(event)">
+      <button onclick="enviarClick()" class="send-btn">
+        <div class="logo small">
+          <div class="tri a"></div>
+          <div class="tri b"></div>
+          <div class="arrow"></div>
+        </div>
+      </button>
+    </footer>
+  </div>
+
+<script>
+async function enviar(e) {
+  if (e.key === 'Enter') enviarClick();
+}
+
+async function enviarClick() {
+  let input = document.getElementById('input');
+  let mensagem = input.value.trim();
+  if (!mensagem) return;
+
+  addBubble(mensagem, 'user');
+  input.value = '';
+
+  let resposta = await fetch('/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mensagem })
+  });
+
+  let data = await resposta.json();
+  addBubble(data.resposta, 'bot');
+}
+
+function addBubble(text, type) {
+  let messages = document.getElementById('messages');
+  let div = document.createElement('div');
+  div.className = `bubble ${type}`;
+  div.innerText = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+</script>
+</body>
+</html>

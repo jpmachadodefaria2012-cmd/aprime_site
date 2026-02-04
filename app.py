@@ -102,9 +102,9 @@ def chat():
     mensagem = data.get("mensagem", "")
     resposta = resposta_aprime(mensagem)
     return jsonify({"resposta": resposta})
-
 import os
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # Pega a porta do Render ou usa 5000 local
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=port)
